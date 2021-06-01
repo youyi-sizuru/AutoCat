@@ -2,12 +2,14 @@ import os
 import random
 import re
 import subprocess
+import sys
 import time
 
 import lxml.etree as ET
 
-
 # -*- coding: UTF-8 -*-
+device_name = None
+
 
 def check_node() -> bool:
     et = dump_and_parse()
@@ -21,7 +23,7 @@ def check_node() -> bool:
     click_node(node)
     time.sleep(4)
     # 唤醒一下屏幕
-    os.system("adb shell input keyevent 224")
+    run_adb_command("shell input keyevent 224")
     # 页面跳转
     check_shop()
     return True
@@ -58,12 +60,12 @@ def check_shop():
         click_node(go_shop_nodes[0])
         time.sleep(2)
         # 唤醒一下屏幕
-        os.system("adb shell input keyevent 224")
+        run_adb_command("shell input keyevent 224")
         start_wait_for_gold()
     if not has_shop:
         start_wait_for_gold()
     else:
-        os.system("adb shell input keyevent 4")
+        run_adb_command("shell input keyevent 4")
         time.sleep(2)
 
 
@@ -98,7 +100,7 @@ def start_wait_for_gold():
         #     print("try to swipe page")
         #     swipe_node(et[0])
     print("back to activity page")
-    os.system("adb shell input keyevent 4")
+    run_adb_command("shell input keyevent 4")
     time.sleep(2)
 
 
@@ -107,7 +109,11 @@ def dump_and_parse() -> ET.Element:
     dump_file_name = "baotao_ui_dump_%d.xml" % int(round(time.time() * 1000))
     android_path = "/sdcard/%s" % dump_file_name
     for i in range(0, 2):
-        out = subprocess.Popen(['adb', 'shell', 'uiautomator', "dump", android_path],
+        if device_name is not None:
+            command_list = ['adb', '-s', device_name, 'shell', 'uiautomator', "dump", android_path]
+        else:
+            command_list = ['adb', 'shell', 'uiautomator', "dump", android_path]
+        out = subprocess.Popen(command_list,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.STDOUT)
         stdout, error = out.communicate()
@@ -115,13 +121,13 @@ def dump_and_parse() -> ET.Element:
         if error is not None or "error" in str(stdout).lower():
             print("dump error")
             continue
-        os.system("adb pull %s %s" % (android_path, work_dir))
+        run_adb_command("pull %s %s" % (android_path, work_dir))
         xml_file_path = os.path.join(work_dir, dump_file_name)
         if not os.path.exists(xml_file_path):
             print("dump file pull failed")
             continue
         et = ET.parse(xml_file_path).getroot()
-        os.system("adb shell rm %s" % android_path)
+        run_adb_command("shell rm %s" % android_path)
         os.remove(xml_file_path)
         return et
     print("the page ui animation too busy, uiautomator can't dump")
@@ -138,9 +144,9 @@ def click_node(node):
     bottom = int(match_result.group(4))
     pointx = random.randint(left + 1, right - 1)
     pointy = random.randint(top + 1, bottom - 1)
-    click_command = "adb shell input tap %d %d" % (pointx, pointy)
+    click_command = "shell input tap %d %d" % (pointx, pointy)
     print("start click node, the commnad: %s" % click_command)
-    os.system(click_command)
+    run_adb_command(click_command)
 
 
 def swipe_node(node):
@@ -155,17 +161,25 @@ def swipe_node(node):
     point_start_y = random.randint(0, 100) + top + (bottom - top) * 3 / 5
     point_end_x = point_start_x
     point_end_y = random.randint(0, 100) + top + (bottom - top) / 5
-    click_command = "adb shell input swipe %d %d %d %d" % (point_start_x, point_start_y, point_end_x, point_end_y)
+    click_command = "shell input swipe %d %d %d %d" % (point_start_x, point_start_y, point_end_x, point_end_y)
     print("start swipe node, the commnad: %s" % click_command)
-    os.system(click_command)
+    run_adb_command(click_command)
+
+
+def run_adb_command(command):
+    if device_name is not None:
+        os.system("adb -s %s %s" % (device_name, command))
+    else:
+        os.system("adb %s" % command)
 
 
 # 条件:
 # 下载adb 并加入环境变量，
 # 开启Android调试模式，并允许模拟点击
-# 每次一次连接一台手机，没有做多台适配
 # 打开淘宝活动首页，点击领喵币，开启领喵币中心
 # 然后允许脚本
 if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        device_name = sys.argv[1]
     while check_node():
         continue
