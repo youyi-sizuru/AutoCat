@@ -43,6 +43,9 @@ def find_node(et: ET.Element):
     nodes = et.xpath(".//node[contains(@text,'逛一逛')]/../..//node[@text='去完成']")
     if len(nodes) != 0:
         return nodes[0]
+    nodes = et.xpath(".//node[@text='去观看']")
+    if len(nodes) != 0:
+        return nodes[0]
     nodes = et.xpath(".//node[@text='去完成']")
     if len(nodes) != 0:
         return nodes[0]
