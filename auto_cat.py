@@ -76,35 +76,36 @@ def check_shop():
 
 
 def start_wait_for_gold():
-    max_check_time = 3
+    # max_check_time = 3
     print("wait for gold")
     time.sleep(16)
-    while max_check_time > 0:
-        et = dump_and_parse()
-        if et is None:
-            # # 节点抓不到，我们就走个流程
-            # print("can't check gold state, we just wait for gold")
-            # time.sleep(15)
-            break
-        mission_complete_nodes = et.xpath(".//node[@text='任务完成']")
-        all_complete_nodes = et.xpath(".//node[@text='任务已经']")
-        if len(mission_complete_nodes) != 0 or len(all_complete_nodes) != 0:
-            # 找到完成的字样就结束了
-            print("Congratulations! your mission is complete!!")
-            break
-        # count_down_nodes = et.xpath(".//node[@text='得喵币']")
-        # if len(count_down_nodes) != 0:
-        #     swipe_node(et[0])
-        #     print("wait for gold")
-        #     time.sleep(16)
-        #     break
-        max_check_time = max_check_time - 1
-        if max_check_time == 0:
-            print("oh no, the page can't start the mission")
-        # else:
-        #     # 尝试去滑动页面去激活倒计时，部分页面需要滑动触发
-        #     print("try to swipe page")
-        #     swipe_node(et[0])
+    # 今年的猫猫似乎不需要滑动触发倒计时，所以直接等待就好，不用确认
+    # while max_check_time > 0:
+    #     et = dump_and_parse()
+    #     if et is None:
+    #         # 节点抓不到，我们就走个流程
+    #         print("can't check gold state, we just wait for gold")
+    #         time.sleep(15)
+    #         break
+    #     mission_complete_nodes = et.xpath(".//node[@text='任务完成']")
+    #     all_complete_nodes = et.xpath(".//node[@text='任务已经']")
+    #     if len(mission_complete_nodes) != 0 or len(all_complete_nodes) != 0:
+    #         # 找到完成的字样就结束了
+    #         print("Congratulations! your mission is complete!!")
+    #         break
+    #     count_down_nodes = et.xpath(".//node[@text='得喵币']")
+    #     if len(count_down_nodes) != 0:
+    #         swipe_node(et[0])
+    #         print("wait for gold")
+    #         time.sleep(16)
+    #         break
+    #     max_check_time = max_check_time - 1
+    #     if max_check_time == 0:
+    #         print("oh no, the page can't start the mission")
+    #     else:
+    #         # 尝试去滑动页面去激活倒计时，部分页面需要滑动触发
+    #         print("try to swipe page")
+    #         swipe_node(et[0])
     print("back to activity page")
     run_adb_command("shell input keyevent 4")
     time.sleep(2)
