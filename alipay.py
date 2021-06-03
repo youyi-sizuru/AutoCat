@@ -42,7 +42,7 @@ class Alipay:
 
     def start_wait_for_gold(self):
         print("start wait for gold")
-        time.sleep(10)
+        time.sleep(12)
         print("end wait for gold")
         self.adb.back()
 
