@@ -7,7 +7,7 @@ import lxml.etree as ET
 from adb_shell import AdbShell
 
 
-class TaoBao:
+class Alipay:
     def __init__(self, adb: AdbShell):
         self.adb = adb
 
@@ -24,43 +24,25 @@ class TaoBao:
         # 唤醒一下屏幕
         self.adb.wake()
         # 页面跳转
-        while self.check_shop():
-            self.start_wait_for_gold()
         self.start_wait_for_gold()
+        et = self.adb.dump_and_parse()
+        nodes = et.xpath(".//node[@text='开心收下']")
+        if len(nodes) == 0:
+            print("can't find any node that can close she dialog")
+            return False
+        self.adb.click_node(nodes[0])
         return True
 
     def find_node(self, et: ET.Element):
         # 按钮满足条件，可以点击跳转
-        nodes = et.xpath(".//node[@text='去浏览']")
-        if len(nodes) != 0:
-            return nodes[0]
-        nodes = et.xpath(".//node[@text='去搜索']")
-        if len(nodes) != 0:
-            return nodes[0]
         nodes = et.xpath(".//node[@text='逛一逛']")
-        if len(nodes) != 0:
-            return nodes[0]
-        nodes = et.xpath(".//node[contains(@text,'逛一逛')]/../..//node[@text='去完成']")
-        if len(nodes) != 0:
-            return nodes[0]
-        nodes = et.xpath(".//node[@text='去观看']")
         if len(nodes) != 0:
             return nodes[0]
         return None
 
-    def check_shop(self) -> bool:
-        et = self.adb.dump_and_parse()
-        if et is None:
-            return False
-        go_shop_nodes = et.xpath(".//node[@text='逛店最多']")
-        if len(go_shop_nodes) == 0:
-            return False
-        self.adb.click_node(go_shop_nodes[0])
-        return True
-
     def start_wait_for_gold(self):
         print("start wait for gold")
-        time.sleep(15)
+        time.sleep(10)
         print("end wait for gold")
         self.adb.back()
 
@@ -68,8 +50,8 @@ class TaoBao:
 @click.command()
 @click.option('--device', '-d', required=False)
 def start(device):
-    taobao = TaoBao(AdbShell(device))
-    while taobao.check_node():
+    alipay = Alipay(AdbShell(device))
+    while alipay.check_node():
         continue
 
 
