@@ -23,6 +23,8 @@ class TaoBao:
         self.adb.click_node(node)
         # 唤醒一下屏幕
         self.adb.wake()
+        if node.attrib["text"] == "去搜索":
+            self.adb.swipe_node(et[0])
         # 页面跳转
         while self.check_shop():
             self.start_wait_for_gold()
@@ -34,9 +36,6 @@ class TaoBao:
         nodes = et.xpath(".//node[@text='去浏览']")
         if len(nodes) != 0:
             return nodes[0]
-        nodes = et.xpath(".//node[@text='去搜索']")
-        if len(nodes) != 0:
-            return nodes[0]
         nodes = et.xpath(".//node[@text='逛一逛']")
         if len(nodes) != 0:
             return nodes[0]
@@ -44,6 +43,9 @@ class TaoBao:
         if len(nodes) != 0:
             return nodes[0]
         nodes = et.xpath(".//node[@text='去观看']")
+        if len(nodes) != 0:
+            return nodes[0]
+        nodes = et.xpath(".//node[@text='去搜索']")
         if len(nodes) != 0:
             return nodes[0]
         return None
