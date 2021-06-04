@@ -9,7 +9,7 @@ from airtest.core.api import auto_setup, connect_device, find_all, Template, tou
 def start(device):
     auto_setup(__file__)
     connect_device("Android:///%s" % device)
-    while go_gold() or go_shop():
+    while go_shop() or go_gold():
         time.sleep(11)
         keyevent("BACK")
         time.sleep(1)
