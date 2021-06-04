@@ -51,10 +51,10 @@ class Alipay:
 
     def start_wait_for_gold(self):
         for i in range(0, 12):
-            count = i % 4
-            print("\r正在等待喵币%s" % "..."[0:count], end="")
+            print("\r正在等待喵币%s" % ("." * i), end="")
             time.sleep(1)
-        print("\r喵币GET")
+        print()
+        print("喵币GET")
         self.adb.back()
 
 

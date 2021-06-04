@@ -34,10 +34,10 @@ def start(device):
 
 def wait_and_back():
     for i in range(0, 12):
-        count = i % 4
-        print("\r等待浏览完成%s" % "..."[0:count], end="")
+        print("\r等待浏览完成%s" % ("." * i), end="")
         time.sleep(1)
-    print("\r金币GET")
+    print()
+    print("金币GET")
     print("返回上一个页面")
     keyevent("BACK")
     # 该死的动画，等长一点
