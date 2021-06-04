@@ -39,15 +39,23 @@ def go_shop() -> bool:
     if goes is None:
         return False
     shops = find_all(Template("jd/shop.png", threshold=0.9))
-    if shops is None:
-        return False
-    for shop in shops:
-        shop_y = shop["result"][1]
-        for go in goes:
-            go_y = go["result"][1]
-            if abs(go_y - shop_y) < 50:
-                touch(go["result"])
-                return True
+    if shops is not None:
+        for shop in shops:
+            shop_y = shop["result"][1]
+            for go in goes:
+                go_y = go["result"][1]
+                if abs(go_y - shop_y) < 50:
+                    touch(go["result"])
+                    return True
+    packs = find_all(Template("jd/pack.png", threshold=0.9))
+    if packs is not None:
+        for pack in packs:
+            pack_y = pack["result"][1]
+            for go in goes:
+                go_y = go["result"][1]
+                if abs(go_y - pack_y) < 50:
+                    touch(go["result"])
+                    return True
     return False
 
 
