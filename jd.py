@@ -10,9 +10,9 @@ def start(device):
     auto_setup(__file__)
     connect_device("Android:///%s" % device)
     while go_gold() or go_shop():
-        time.sleep(12)
+        time.sleep(11)
         keyevent("BACK")
-        time.sleep(2)
+        time.sleep(1)
         continue
     print("complete")
 
