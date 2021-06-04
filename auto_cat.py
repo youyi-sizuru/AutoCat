@@ -4,7 +4,7 @@ import time
 import click
 import lxml.etree as ET
 
-from adb_shell import AdbShell
+from adb_shell import AdbShell, get_first_device
 
 
 class TaoBao:
@@ -18,7 +18,7 @@ class TaoBao:
         node = self.find_node(et)
         # 找不到满足条件的节点
         if node is None:
-            print("can't find any node that can jump to wait gold")
+            print("笑死，根本找不到可以点击的按钮，请确认是否符合自己的预期")
             return False
         self.adb.click_node(node)
         # 唤醒一下屏幕
@@ -61,15 +61,22 @@ class TaoBao:
         return True
 
     def start_wait_for_gold(self):
-        print("start wait for gold")
-        time.sleep(15)
-        print("end wait for gold")
+        for i in range(0, 16):
+            count = i % 4
+            print("\r正在等待喵币%s" % "..."[0:count], end="")
+            time.sleep(1)
+        print("\r喵币GET")
         self.adb.back()
 
 
 @click.command()
 @click.option('--device', '-d', required=False)
 def start(device):
+    if device is None:
+        device = get_first_device()
+    if device is None:
+        print("找不到设备，请用数据线连接你的手机")
+        return
     taobao = TaoBao(AdbShell(device))
     while taobao.check_node():
         continue
