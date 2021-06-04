@@ -33,7 +33,7 @@ def start(device):
 
 
 def wait_and_back():
-    for i in range(0, 10):
+    for i in range(0, 12):
         count = i % 4
         print("\r等待浏览完成%s" % "..."[0:count], end="")
         time.sleep(1)
