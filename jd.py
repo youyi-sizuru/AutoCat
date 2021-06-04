@@ -19,7 +19,11 @@ def start(device):
 
 def go_gold() -> bool:
     goes = find_all(Template("jd/go.png", threshold=0.9))
+    if goes is None:
+        return False
     golds = find_all(Template("jd/gold.png", threshold=0.9))
+    if golds is None:
+        return False
     for gold in golds:
         gold_y = gold["result"][1]
         for go in goes:
@@ -32,7 +36,11 @@ def go_gold() -> bool:
 
 def go_shop() -> bool:
     goes = find_all(Template("jd/go.png", threshold=0.9))
+    if goes is None:
+        return False
     shops = find_all(Template("jd/shop.png", threshold=0.9))
+    if shops is None:
+        return False
     for shop in shops:
         shop_y = shop["result"][1]
         for go in goes:
