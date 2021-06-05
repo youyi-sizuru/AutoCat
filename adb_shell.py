@@ -44,7 +44,7 @@ class AdbShell:
         work_dir = os.getcwd()
         dump_file_name = "baotao_ui_dump_%d.xml" % int(round(time.time() * 1000))
         android_path = "/sdcard/%s" % dump_file_name
-        for i in range(0, 2):
+        for i in range(0, 5):
             command_list = ['adb', '-s', self.device_name, 'shell', 'uiautomator', "dump", android_path]
             out = subprocess.Popen(command_list,
                                    stdout=subprocess.PIPE,
@@ -54,12 +54,12 @@ class AdbShell:
                 stdout, error = out.communicate(timeout=20)
             except subprocess.TimeoutExpired:
                 print("获取页面信息超时,正在重试")
-                time.sleep(2)
+                time.sleep(4)
                 continue
             if out.returncode != 0 or error is not None or "error" in stdout.decode("utf-8").lower():
                 print(stdout.decode("utf-8"))
                 print("获取失败,正在重试")
-                time.sleep(2)
+                time.sleep(4)
                 continue
             print("正在将手机端页面信息拉取到本地")
             self.run_adb_command("pull %s %s" % (android_path, work_dir))
