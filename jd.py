@@ -1,9 +1,10 @@
 import logging
+import random
 import time
 
 import click
 from airtest.core.android.android import Android
-from airtest.core.api import auto_setup, connect_device, find_all, Template, touch, keyevent
+from airtest.core.api import auto_setup, connect_device, find_all, Template, touch, keyevent, exists, swipe
 
 logger = logging.getLogger("airtest")
 logger.setLevel(logging.ERROR)
@@ -19,14 +20,23 @@ def start(device):
         print("找不到设备，请用数据线连接你的手机")
     connect_device("Android:///%s" % device)
     while True:
-        if go_shop():
+        if go_with_target("jd/watch.png", "浏览任务"):
             wait_and_back()
             continue
-        if go_pack():
+        if go_with_target("jd/shop.png", "浏览商店"):
             wait_and_back()
             continue
-        if go_gold():
+        if go_with_target("jd/pack.png", "浏览大牌"):
+            # 大牌页面加载比较慢
+            time.sleep(3)
             wait_and_back()
+            continue
+        if go_with_target("jd/gold.png", "浏览好物"):
+            time.sleep(3)
+            if check_car():
+                keyevent("BACK")
+            else:
+                wait_and_back()
             continue
         break
     print("找不到了，请确认是否符合自己的预期")
@@ -42,6 +52,45 @@ def wait_and_back():
     keyevent("BACK")
     # 该死的动画，等长一点
     time.sleep(4)
+
+
+def check_car() -> bool:
+    if not exists(Template("jd/gold_big.png", threshold=0.9)):
+        return False
+    print("准备加入该死的购物车")
+    car_count = 0
+    display_info = Android().get_display_info()
+    width = display_info['width']
+    height = display_info['height']
+
+    swipe_x = random.randint(width / 4, width / 4 * 3)
+    swipe_start_y = height / 5 * 4 - random.randint(1, 10)
+    swipe_end_y = height / 5 * 1 + random.randint(1, 10)
+    not_find_times = 0
+    while True:
+        cars = find_all(Template("jd/car.png", threshold=0.9))
+        if cars is not None and len(cars) > 0:
+            not_find_times = 0
+            for car in cars:
+                car_count += 1
+                print("%d个加入购物车" % car_count)
+                touch(car["result"])
+                time.sleep(3)
+                print("我看都不看就返回页面，打我呀")
+                keyevent("BACK")
+                time.sleep(2)
+
+                if car_count > 5:
+                    print("完成啦，结束后记得清空购物车，东哥不会心疼你的")
+                    return True
+            print("战术滑动到下一页，不要怕，技术性调整")
+            swipe((swipe_x, swipe_start_y), (swipe_x, swipe_end_y), duration=random.random() + 1, steps=1)
+        else:
+            not_find_times += 1
+        if not_find_times > 30:
+            print("根本找不到加入购物车啊，只能说你运气太差了")
+            break
+    return True
 
 
 def go_with_target(filename, button_name) -> bool:
@@ -61,18 +110,6 @@ def go_with_target(filename, button_name) -> bool:
                 touch(go["result"])
                 return True
     return False
-
-
-def go_gold() -> bool:
-    return go_with_target("jd/gold.png", "浏览好物")
-
-
-def go_shop() -> bool:
-    return go_with_target("jd/shop.png", "浏览商店")
-
-
-def go_pack() -> bool:
-    return go_with_target("jd/pack.png", "浏览大牌")
 
 
 if __name__ == '__main__':
