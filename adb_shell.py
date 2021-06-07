@@ -33,7 +33,7 @@ class AdbShell:
         work_dir = os.getcwd()
         dump_file_name = "baotao_ui_dump_%d.xml" % int(round(time.time() * 1000))
         android_path = "/sdcard/%s" % dump_file_name
-        for i in range(0, 5):
+        for i in range(0, 3):
             print("开始获取页面信息并保存")
             try:
                 stdout = self.run_adb_command("shell uiautomator dump %s" % android_path)
@@ -59,11 +59,6 @@ class AdbShell:
             except AdbError as e:
                 print(e.stderr)
                 print("运行出错，正在重试")
-            if i == 2:
-                print("尝试重新连接手机")
-                self.android.adb.kill_server()
-                time.sleep(1)
-                self.android.adb.start_server()
             time.sleep(2 * (i + 1))
         print("有问题导致无法抓取信息:(")
         return None
@@ -97,4 +92,4 @@ class AdbShell:
     def run_adb_command(self, command):
         full_command = "-s %s %s" % (self.device_name, command)
         print("运行相关命令: %s" % full_command)
-        return self.android.adb.cmd(full_command, timeout=20)
+        return self.android.adb.cmd(full_command, timeout=10)
