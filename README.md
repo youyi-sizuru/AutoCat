@@ -6,9 +6,7 @@ python 3.0
 
 依赖安装：lxml, click, airtest
 
-下载[adb](https://developer.android.com/studio/command-line/adb)并配置到环境变量中
-
-
+device_name 可以通过 adb devices 命令来获取，默认取第一个设备
 
 在android手机上开启USB调试和模拟点击.
 
@@ -16,7 +14,7 @@ python 3.0
 
 打开淘宝，打开领猫币界面，运行脚本:
 
-python auto_cat.py -d your_device_name
+python taobao.py -d your_device_name
 
 <img src="preview/taobao.jpg" alt="淘宝" width="240px"/>
 
@@ -26,7 +24,7 @@ python alipay.py -d your_device_name
 
 <img src="preview/alipay.png" alt="支付宝" width="240px"/>
 
-打开京东，打开领金币中心， 运行脚本 (device_name 可以通过 adb devices 命令来获取)：
+打开京东，打开领金币中心， 运行脚本
 
 python jd.py -d your_device_name  
 

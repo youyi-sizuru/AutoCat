@@ -1,29 +1,17 @@
 import os
 import random
 import re
-import subprocess
 import time
 
 import lxml.etree as ET
-
-
-def get_first_device():
-    command_list = ['adb', 'devices']
-    out = subprocess.Popen(command_list,
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.STDOUT)
-    out_str = out.communicate()[0].decode("utf-8").replace("\r", "")
-    keyword = "List of devices attached"
-    device_info = out_str[out_str.rindex(keyword) + len(keyword) + 1:]
-    device_list = device_info.split("\n")
-    if len(device_list) > 0 and len(device_list[0].split("\t")) == 2:
-        return device_list[0].split("\t")[0]
-    return None
+from airtest.core.api import connect_device
+from airtest.core.error import DeviceConnectionError, AdbError
 
 
 class AdbShell:
-    def __init__(self, device_name=None):
+    def __init__(self, device_name: str):
         self.device_name = device_name
+        self.android = connect_device("android:///%s" % device_name)
 
     def swipe_node(self, node):
         bounds = str(node.get("bounds"))
@@ -45,41 +33,38 @@ class AdbShell:
         dump_file_name = "baotao_ui_dump_%d.xml" % int(round(time.time() * 1000))
         android_path = "/sdcard/%s" % dump_file_name
         for i in range(0, 5):
-            command_list = ['adb', '-s', self.device_name, 'shell', 'uiautomator', "dump", android_path]
-            out = subprocess.Popen(command_list,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.STDOUT)
             print("开始获取页面信息并保存")
             try:
-                stdout, error = out.communicate(timeout=20)
-            except subprocess.TimeoutExpired:
+                stdout = self.run_adb_command("shell uiautomator dump %s" % android_path)
+                if "error" in stdout.lower():
+                    print(stdout)
+                    print("获取失败,正在重试")
+                else:
+                    print("正在将手机端页面信息拉取到本地")
+                    self.run_adb_command("pull %s %s" % (android_path, work_dir))
+                    xml_file_path = os.path.join(work_dir, dump_file_name)
+                    if not os.path.exists(xml_file_path):
+                        print("页面信息拉取失败，信息文件根本不存在")
+                        continue
+                    print("成功拉取到本地")
+                    et = ET.parse(xml_file_path).getroot()
+                    print("解析成功，开始移除本地和手机端多余的信息文件")
+                    self.run_adb_command("shell rm %s" % android_path)
+                    os.remove(xml_file_path)
+                    print("完成移除")
+                    return et
+            except DeviceConnectionError:
                 print("获取页面信息超时,正在重试")
-                time.sleep(2 * (i + 1))
-                continue
-            if out.returncode != 0 or error is not None or "error" in stdout.decode("utf-8").lower():
-                print(stdout.decode("utf-8"))
-                print("获取失败,正在重试")
-                if i == 2:
-                    print("尝试重新连接手机")
-                    os.system("adb kill-server")
-                    time.sleep(1)
-                    os.system("adb start-server")
-                time.sleep(2 * (i + 1))
-                continue
-            print("正在将手机端页面信息拉取到本地")
-            self.run_adb_command("pull %s %s" % (android_path, work_dir))
-            xml_file_path = os.path.join(work_dir, dump_file_name)
-            if not os.path.exists(xml_file_path):
-                print("页面信息拉取失败，信息文件根本不存在")
-                continue
-            print("成功拉取到本地")
-            et = ET.parse(xml_file_path).getroot()
-            print("解析成功，开始移除本地和手机端多余的信息文件")
-            self.run_adb_command("shell rm %s" % android_path)
-            os.remove(xml_file_path)
-            print("完成移除")
-            return et
-        print("页面动画过于频繁导致工具无法抓取信息:(")
+            except AdbError as e:
+                print(e.stderr)
+                print("运行出错，正在重试")
+            if i == 2:
+                print("尝试重新连接手机")
+                self.android.adb.kill_server()
+                time.sleep(1)
+                self.android.adb.start_server()
+            time.sleep(2 * (i + 1))
+        print("有问题导致无法抓取信息:(")
         return None
 
     def back(self):
@@ -109,6 +94,6 @@ class AdbShell:
         print("完成点击")
 
     def run_adb_command(self, command):
-        full_command = "adb -s %s %s" % (self.device_name, command)
+        full_command = "-s %s %s" % (self.device_name, command)
         print("运行相关命令: %s" % full_command)
-        os.system(full_command)
+        return self.android.adb.cmd(full_command, timeout=20)
