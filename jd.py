@@ -19,35 +19,43 @@ def start(device):
     if device is None:
         print("找不到设备，请用数据线连接你的手机")
     connect_device("Android:///%s" % device)
-    print("准备工作完成=======")
+    not_find = 0
     while True:
-        if go_with_target("jd/watch.png", "浏览任务"):
-            wait_and_back()
-            continue
-        if go_with_target("jd/shop_gold.png", "浏览金色商店"):
-            wait_and_back()
-            continue
-        if go_with_target("jd/shop.png", "浏览商店"):
-            wait_and_back()
-            continue
-        if go_with_target("jd/pack.png", "浏览大牌"):
-            # 大牌页面加载比较慢
+        if start_mission():
+            not_find = 0
+        else:
+            not_find += 1
+            # 有些任务会进入到奇怪的页面，所以需要一直点返回
+            print("找不到任务了，尝试点击返回看看")
+            keyevent("BACK")
             time.sleep(3)
-            wait_and_back()
-            continue
-        if go_with_target("jd/gold.png", "浏览好物"):
-            time.sleep(3)
-            if check_car():
-                keyevent("BACK")
-            else:
-                wait_and_back()
-            continue
-        if go_with_target("jd/game.png", "浏览活动页"):
-            time.sleep(3)
-            wait_and_back()
-            continue
-        break
+        if not_find > 3:
+            break
     print("找不到了，请确认是否符合自己的预期")
+
+
+def start_mission() -> bool:
+    if go_with_target("jd/watch.png", "浏览任务"):
+        wait_and_back()
+    elif go_with_target("jd/shop.png", "浏览商店"):
+        wait_and_back()
+    elif go_with_target("jd/shop_gold.png", "浏览金色商店"):
+        wait_and_back()
+    elif go_with_target("jd/game.png", "浏览活动页"):
+     wait_and_back()
+    elif go_with_target("jd/pack.png", "浏览大牌"):
+        # 大牌页面加载比较慢
+        time.sleep(3)
+        wait_and_back()
+    elif go_with_target("jd/gold.png", "浏览好物"):
+        time.sleep(3)
+        if check_car():
+            keyevent("BACK")
+        else:
+            wait_and_back()
+    else:
+        return False
+    return True
 
 
 def wait_and_back():
@@ -98,7 +106,7 @@ def check_car() -> bool:
         if not_find_times > 30:
             print("根本找不到加入购物车啊，只能说你运气太差了")
             break
-    return True
+    return False
 
 
 def go_with_target(filename, button_name) -> bool:

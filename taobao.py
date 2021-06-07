@@ -1,10 +1,15 @@
 # -*- coding: UTF-8 -*-
+import logging
 import time
 
 import click
 import lxml.etree as ET
+from airtest.core.android.android import Android
 
-from adb_shell import AdbShell, get_first_device
+from adb_shell import AdbShell
+
+logger = logging.getLogger("airtest")
+logger.setLevel(logging.ERROR)
 
 
 class TaoBao:
@@ -33,19 +38,10 @@ class TaoBao:
 
     def find_node(self, et: ET.Element):
         # 按钮满足条件，可以点击跳转
-        nodes = et.xpath(".//node[@text='去浏览']")
+        nodes = et.xpath(".//node[@text='去浏览' or @text='逛一逛' or @text='去观看' or @text='去搜索' or @text='去逛逛']")
         if len(nodes) != 0:
             return nodes[0]
-        nodes = et.xpath(".//node[@text='逛一逛']")
-        if len(nodes) != 0:
-            return nodes[0]
-        nodes = et.xpath(".//node[contains(@text,'逛一逛')]/../..//node[@text='去完成']")
-        if len(nodes) != 0:
-            return nodes[0]
-        nodes = et.xpath(".//node[@text='去观看']")
-        if len(nodes) != 0:
-            return nodes[0]
-        nodes = et.xpath(".//node[@text='去搜索']")
+        nodes = et.xpath(".//node[contains(@text,'逛')]/../..//node[@text='去完成']")
         if len(nodes) != 0:
             return nodes[0]
         return None
@@ -73,7 +69,7 @@ class TaoBao:
 @click.option('--device', '-d', required=False)
 def start(device):
     if device is None:
-        device = get_first_device()
+        device = Android().get_default_device()
     if device is None:
         print("找不到设备，请用数据线连接你的手机")
         return
