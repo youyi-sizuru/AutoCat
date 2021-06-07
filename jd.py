@@ -67,7 +67,7 @@ def start_mission() -> bool:
 
 
 def wait_and_back():
-    for i in range(0, 12):
+    for i in range(0, 10):
         print("\r等待浏览完成%s" % ("." * i), end="")
         time.sleep(1)
     print()
