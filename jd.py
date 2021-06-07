@@ -83,7 +83,7 @@ def check_car() -> bool:
         return False
     print("准备加入该死的购物车")
     car_count = 0
-    swipe_x = random.randint(screen_width / 4, screen_width / 4 * 3)
+    swipe_x = random.randint(int(screen_width / 4), int(screen_width / 4 * 3))
     swipe_start_y = screen_height / 5 * 4 - random.randint(1, 10)
     swipe_end_y = screen_height / 5 * 1 + random.randint(1, 10)
     not_find_times = 0
