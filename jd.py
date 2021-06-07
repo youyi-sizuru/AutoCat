@@ -9,6 +9,7 @@ from airtest.core.api import auto_setup, connect_device, find_all, Template, tou
 logger = logging.getLogger("airtest")
 logger.setLevel(logging.ERROR)
 screen_width = 1080
+screen_height = 1920
 
 
 @click.command()
@@ -23,7 +24,9 @@ def start(device):
     connect_device("Android:///%s" % device)
     display_info = android.display_info
     global screen_width
+    global screen_height
     screen_width = display_info['width']
+    screen_height = display_info['height']
     not_find = 0
     while True:
         if start_mission():
@@ -80,13 +83,9 @@ def check_car() -> bool:
         return False
     print("准备加入该死的购物车")
     car_count = 0
-    display_info = Android().get_display_info()
-    width = display_info['width']
-    height = display_info['height']
-
-    swipe_x = random.randint(width / 4, width / 4 * 3)
-    swipe_start_y = height / 5 * 4 - random.randint(1, 10)
-    swipe_end_y = height / 5 * 1 + random.randint(1, 10)
+    swipe_x = random.randint(screen_width / 4, screen_width / 4 * 3)
+    swipe_start_y = screen_height / 5 * 4 - random.randint(1, 10)
+    swipe_end_y = screen_height / 5 * 1 + random.randint(1, 10)
     not_find_times = 0
     while True:
         cars = find_all(Template("jd/car.png", threshold=0.9))
@@ -97,14 +96,13 @@ def check_car() -> bool:
                 print("%d个加入购物车" % car_count)
                 touch(car["result"])
                 time.sleep(3)
-                print("我看都不看就返回页面，打我呀")
+                print("返回页面")
                 keyevent("BACK")
                 time.sleep(2)
-
                 if car_count > 5:
                     print("完成啦，结束后记得清空购物车，东哥不会心疼你的")
                     return True
-            print("战术滑动到下一页，不要怕，技术性调整")
+            print("滑动到下一页")
             swipe((swipe_x, swipe_start_y), (swipe_x, swipe_end_y), duration=random.random() + 1, steps=1)
         else:
             not_find_times += 1
