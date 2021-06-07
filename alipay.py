@@ -5,7 +5,7 @@ import time
 import click
 import lxml.etree as ET
 from airtest.core.android import Android
-from airtest.core.api import touch, find_all, Template, keyevent
+from airtest.core.api import touch, find_all, Template
 
 from adb_shell import AdbShell
 

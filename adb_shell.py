@@ -4,12 +4,13 @@ import re
 import time
 
 import lxml.etree as ET
-from airtest.core.api import connect_device
+from airtest.core.api import connect_device, auto_setup
 from airtest.core.error import DeviceConnectionError, AdbError
 
 
 class AdbShell:
     def __init__(self, device_name: str):
+        auto_setup(__file__)
         self.device_name = device_name
         self.android = connect_device("android:///%s" % device_name)
 
