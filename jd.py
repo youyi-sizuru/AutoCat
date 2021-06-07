@@ -8,17 +8,22 @@ from airtest.core.api import auto_setup, connect_device, find_all, Template, tou
 
 logger = logging.getLogger("airtest")
 logger.setLevel(logging.ERROR)
+screen_width = 1080
 
 
 @click.command()
 @click.option('--device', '-d', required=False)
 def start(device):
     auto_setup(__file__)
+    android = Android()
     if device is None:
-        device = Android().get_default_device()
+        device = android.get_default_device()
     if device is None:
         print("找不到设备，请用数据线连接你的手机")
     connect_device("Android:///%s" % device)
+    display_info = android.display_info
+    global screen_width
+    screen_width = display_info['width']
     not_find = 0
     while True:
         if start_mission():
@@ -110,24 +115,22 @@ def check_car() -> bool:
 
 
 def go_with_target(filename, button_name) -> bool:
-    if "浏览金色商店" == button_name:
-        goes = find_all(Template("jd/go_gold.png", threshold=0.9))
-    else:
-        goes = find_all(Template("jd/go.png", threshold=0.9))
-    if goes is None:
-        print("找不到去完成按钮")
+    template = Template(filename, threshold=0.9)
+    targets = find_all(template)
+    if targets is None or len(targets) == 0:
         return False
-    targets = find_all(Template(filename, threshold=0.9))
-    if targets is None:
-        return False
-    for target in targets:
-        target_y = target["result"][1]
-        for go in goes:
-            go_y = go["result"][1]
-            if abs(go_y - target_y) < 50:
-                print("找到了 %s 对应的去完成按钮" % button_name)
-                touch(go["result"])
-                return True
+    # 可以利用相对位置来确定去完成按钮的位置，避免不同机型去完成按钮不一致的问题
+    target_y = targets[0]["result"][1]
+    target_x = targets[0]["result"][0]
+    go_y = target_y
+    go_x = (screen_width - target_x) - random.randint(10, 50)
+    # 尝试去点一下右边的按钮
+    touch((go_x, go_y))
+    time.sleep(1)
+    # 成功跳转页面的话，就不会存在target了
+    if not exists(template):
+        print("找到了 %s 对应的去完成按钮" % button_name)
+        return True
     return False
 
 

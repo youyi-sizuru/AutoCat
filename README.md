@@ -1,8 +1,14 @@
-仓库转到[码云](https://gitee.com/youyi_sizruru/AutoCat)去了
+[码云](https://gitee.com/youyi_sizruru/AutoCat)
+
+## 警告
+
+京东是基于图像识别的（京东活动似乎是个网页，dump下来的信息很少），目前只适配了1080p分辨率的图像，有需求可以fork该仓库，基于自己的手机截图改掉对应的图像
+
+运行前，最好把一些小游戏先点掉（例如喂小鸡，淘宝人生等等），该脚本无法识别这些。
 
 ## 环境
 
-python 3.0
+python 3.3以上
 
 依赖安装：lxml, click, airtest
 
@@ -30,7 +36,5 @@ python jd.py -d your_device_name
 
 <img src="preview/jd.png" alt="狗东" width="240px"/>
 
-## 警告
 
-运行前，最好把一些小游戏先点掉（例如喂小鸡，淘宝人生等等），该脚本无法识别这些。
 
