@@ -42,7 +42,7 @@ def start_mission() -> bool:
     elif go_with_target("jd/shop_gold.png", "浏览金色商店"):
         wait_and_back()
     elif go_with_target("jd/game.png", "浏览活动页"):
-     wait_and_back()
+        wait_and_back()
     elif go_with_target("jd/pack.png", "浏览大牌"):
         # 大牌页面加载比较慢
         time.sleep(3)
@@ -110,10 +110,8 @@ def check_car() -> bool:
 
 
 def go_with_target(filename, button_name) -> bool:
-    if("浏览金色商店" == button_name):
+    if "浏览金色商店" == button_name:
         goes = find_all(Template("jd/go_gold.png", threshold=0.9))
-        if(goes is None):
-            return False
     else:
         goes = find_all(Template("jd/go.png", threshold=0.9))
     if goes is None:
