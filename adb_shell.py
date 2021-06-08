@@ -94,4 +94,4 @@ class AdbShell:
     def run_adb_command(self, command):
         full_command = "-s %s %s" % (self.device_name, command)
         print("运行相关命令: %s" % full_command)
-        return self.android.adb.cmd(full_command, timeout=20)
+        return self.android.adb.cmd(full_command, device=False, timeout=20)
