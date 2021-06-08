@@ -36,7 +36,7 @@ def start(device):
         else:
             not_find += 1
             # 有些任务会进入到奇怪的页面，所以启动京东，然后一直点返回
-            if not_find == 1:
+            if not_find == 2:
                 print("找不到任务了，尝试启动京东看看")
                 android.adb.cmd("-s %s shell monkey -p com.jingdong.app.mall 1" % device)
             else:
@@ -47,7 +47,7 @@ def start(device):
         if find >= 100:
             break
         # 超过3次找不到就离开
-        if not_find > 3:
+        if not_find > 4:
             break
     print("找不到了，请确认是否符合自己的预期")
 
