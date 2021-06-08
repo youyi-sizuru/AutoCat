@@ -2,6 +2,7 @@ import os
 import random
 import re
 import time
+from pathlib import Path
 
 import lxml.etree as ET
 from airtest.core.api import connect_device, auto_setup
@@ -30,8 +31,8 @@ class AdbShell:
         self.run_adb_command("shell input swipe %d %d %d %d" % (point_start_x, point_start_y, point_end_x, point_end_y))
 
     def dump_and_parse(self) -> ET.Element:
-        work_dir = os.getcwd()
-        dump_file_name = "baotao_ui_dump_%d.xml" % int(round(time.time() * 1000))
+        work_dir = Path(__file__).resolve().parent
+        dump_file_name = "temp_ui_dump_%d.xml" % int(round(time.time() * 1000))
         android_path = "/sdcard/%s" % dump_file_name
         for i in range(0, 3):
             print("开始获取页面信息并保存")
