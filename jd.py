@@ -28,8 +28,10 @@ def start(device):
     screen_width = display_info['width']
     screen_height = display_info['height']
     not_find = 0
+    find = 0
     while True:
         if start_mission():
+            find += 1
             not_find = 0
         else:
             not_find += 1
@@ -41,32 +43,44 @@ def start(device):
                 print("找不到任务了，尝试点击返回看看")
                 keyevent("BACK")
             time.sleep(3)
+        # 死循环 100次限制
+        if find >= 100:
+            break
+        # 超过3次找不到就离开
         if not_find > 3:
             break
     print("找不到了，请确认是否符合自己的预期")
 
 
 def start_mission() -> bool:
-    if go_with_target("jd/watch.png", "浏览任务"):
-        wait_and_back()
-    elif go_with_target("jd/shop.png", "浏览商店"):
-        wait_and_back()
-    elif go_with_target("jd/shop_gold.png", "浏览金色商店"):
-        wait_and_back()
-    elif go_with_target("jd/game.png", "浏览活动页"):
-        wait_and_back()
-    elif go_with_target("jd/pack.png", "浏览大牌"):
-        # 大牌页面加载比较慢
+    top_point = None
+    mission_name = None
+    # 找到最上面那个任务
+    for target in [("jd/watch.png", "浏览任务"), ("jd/shop.png", "浏览商店"), ("jd/shop_gold.png", "浏览金色商店"),
+                   ("jd/game.png", "浏览活动页"), ("jd/gold.png", "浏览好物")]:
+        for point in find_target(target[0]):
+            if top_point is None or top_point[1] > point[1]:
+                top_point = point
+                mission_name = target[1]
+    if top_point is None:
+        return False
+    print("找到了 %s 对应的按钮" % mission_name)
+    # 可以利用相对位置来确定去完成按钮的位置，避免不同机型去完成按钮不一致的问题
+    go_y = top_point[1]
+    go_x = (screen_width - top_point[0]) - random.randint(10, 50)
+    touch((go_x, go_y))
+    if mission_name == "浏览大牌":
+        # 浏览大牌页面加载比较慢
         time.sleep(3)
         wait_and_back()
-    elif go_with_target("jd/gold.png", "浏览好物"):
+    elif mission_name == "浏览好物":
         time.sleep(3)
         if check_car():
             keyevent("BACK")
         else:
             wait_and_back()
     else:
-        return False
+        wait_and_back()
     return True
 
 
@@ -116,24 +130,13 @@ def check_car() -> bool:
     return False
 
 
-def go_with_target(filename, button_name) -> bool:
+def find_target(filename) -> [tuple]:
     template = Template(filename, threshold=0.9)
     targets = find_all(template)
     if targets is None or len(targets) == 0:
-        return False
-    # 可以利用相对位置来确定去完成按钮的位置，避免不同机型去完成按钮不一致的问题
-    target_y = targets[0]["result"][1]
-    target_x = targets[0]["result"][0]
-    go_y = target_y
-    go_x = (screen_width - target_x) - random.randint(10, 50)
-    # 尝试去点一下右边的按钮
-    touch((go_x, go_y))
-    time.sleep(1)
-    # 成功跳转页面的话，就不会存在target了
-    if not exists(template):
-        print("找到了 %s 对应的去完成按钮" % button_name)
-        return True
-    return False
+        return []
+    else:
+        return map(lambda target: target['result'], targets)
 
 
 if __name__ == '__main__':

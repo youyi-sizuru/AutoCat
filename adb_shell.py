@@ -59,6 +59,8 @@ class AdbShell:
             except AdbError as e:
                 print(e.stderr)
                 print("运行出错，正在重试")
+            except:
+                print("运行出错，正在重试")
             time.sleep(2 * (i + 1))
         print("有问题导致无法抓取信息:(")
         return None
@@ -92,4 +94,4 @@ class AdbShell:
     def run_adb_command(self, command):
         full_command = "-s %s %s" % (self.device_name, command)
         print("运行相关命令: %s" % full_command)
-        return self.android.adb.cmd(full_command, timeout=10)
+        return self.android.adb.cmd(full_command, timeout=20)
