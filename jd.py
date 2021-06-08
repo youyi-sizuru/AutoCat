@@ -33,9 +33,13 @@ def start(device):
             not_find = 0
         else:
             not_find += 1
-            # 有些任务会进入到奇怪的页面，所以需要一直点返回
-            print("找不到任务了，尝试点击返回看看")
-            keyevent("BACK")
+            # 有些任务会进入到奇怪的页面，所以启动京东，然后一直点返回
+            if not_find == 1:
+                print("找不到任务了，尝试启动京东看看")
+                android.adb.cmd("-s %s shell monkey -p com.jingdong.app.mall 1" % device)
+            else:
+                print("找不到任务了，尝试点击返回看看")
+                keyevent("BACK")
             time.sleep(3)
         if not_find > 3:
             break
