@@ -44,7 +44,7 @@ def start(device):
                 keyevent("BACK")
             time.sleep(3)
         # 死循环 100次限制
-        if find >= 100:
+        if find >= 200:
             break
         # 超过3次找不到就离开
         if not_find > 3:
