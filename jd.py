@@ -43,8 +43,8 @@ def start(device):
                 print("找不到任务了，尝试点击返回看看")
                 keyevent("BACK")
             time.sleep(3)
-        # 死循环 200次限制
-        if find >= 200:
+        # 死循环 100次限制
+        if find >= 100:
             break
         # 超过3次找不到就离开
         if not_find > 3:
