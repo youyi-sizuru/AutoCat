@@ -57,7 +57,7 @@ def start_mission() -> bool:
     mission_name = None
     # 找到最上面那个任务
     for target in [("jd/watch.png", "浏览任务"), ("jd/shop.png", "浏览商店"), ("jd/shop_gold.png", "浏览金色商店"),
-                   ("jd/game.png", "浏览活动页"), ("jd/gold.png", "浏览好物"), ("jd/pack.png", "浏览大牌")]:
+                   ("jd/game.png", "浏览活动页"), ("jd/gold.png", "浏览好物"), ("jd/pack.png", "浏览大牌"), ("jd/618.png", "618")]:
         for point in find_target(target[0]):
             if top_point is None or top_point[1] > point[1]:
                 top_point = point
