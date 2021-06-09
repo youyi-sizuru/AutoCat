@@ -69,7 +69,7 @@ def start_mission() -> bool:
     go_y = top_point[1]
     go_x = (screen_width - top_point[0]) - random.randint(10, 50)
     touch((go_x, go_y))
-    if mission_name == "浏览大牌":
+    if mission_name in ["浏览大牌", "618" ]:
         # 浏览大牌页面加载比较慢
         time.sleep(3)
         wait_and_back()
