@@ -15,6 +15,7 @@ logger.setLevel(logging.ERROR)
 class TaoBao:
     def __init__(self, adb: AdbShell):
         self.adb = adb
+        self.had_check_shop = False
 
     def check_node(self) -> bool:
         et = self.adb.dump_and_parse()
@@ -25,14 +26,17 @@ class TaoBao:
         if node is None:
             print("笑死，根本找不到可以点击的按钮，请确认是否符合自己的预期")
             return False
+        # 页面跳转
         self.adb.click_node(node)
         # 唤醒一下屏幕
         self.adb.wake()
         if node.attrib["text"] == "去搜索":
             self.adb.swipe_node(et[0])
-        # 页面跳转
-        while self.check_shop():
-            self.start_wait_for_gold()
+        # 二级页面逛店已经完成，不再进行确认了，节省一点时间
+        if not self.had_check_shop:
+            while self.check_shop():
+                self.had_check_shop = True
+                self.start_wait_for_gold()
         self.start_wait_for_gold()
         return True
 
