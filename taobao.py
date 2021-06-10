@@ -33,7 +33,7 @@ class TaoBao:
         if node.attrib["text"] == "去搜索":
             self.adb.swipe_node(et[0])
         # 二级页面逛店已经完成，不再进行确认了，节省一点时间
-        if not self.had_check_shop:
+        if not self.had_check_shop and node.attrib["text"] == "去浏览":
             while self.check_shop():
                 self.had_check_shop = True
                 self.start_wait_for_gold()
