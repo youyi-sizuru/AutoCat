@@ -43,8 +43,8 @@ def start(device):
                 print("找不到任务了，尝试点击返回看看")
                 keyevent("BACK")
             time.sleep(3)
-        # 死循环 100次限制
-        if find >= 100:
+        # 死循环 150次限制
+        if find >= 150:
             break
         # 超过3次找不到就离开
         if not_find > 4:
@@ -85,7 +85,7 @@ def start_mission() -> bool:
 
 
 def wait_and_back():
-    for i in range(0, 10):
+    for i in range(0, 12):
         print("\r等待浏览完成%s" % ("." * i), end="")
         time.sleep(1)
     print()
