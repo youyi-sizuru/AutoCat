@@ -12,7 +12,9 @@
 
 python 3.3以上
 
-依赖安装：lxml, click, airtest
+依赖安装：lxml, click, airtest, yaml
+
+airtest=1.12.3 修改的获取屏幕截图的方式，运行过程中需要安装yosemite的应用
 
 device_name 可以通过 adb devices 命令来获取，默认取第一个设备
 
@@ -34,7 +36,7 @@ python alipay.py -d your_device_name
 
 打开京东，打开领金币中心， 运行脚本
 
-python jd.py -d your_device_name  
+python jd.py -d your_device_name
 
 <img src="preview/jd.png" alt="狗东" width="240px"/>
 

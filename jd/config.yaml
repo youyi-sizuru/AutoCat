@@ -1,0 +1,29 @@
+targets:
+  - image: jd/shop.png
+    desc: 购物车
+    checkCar: true
+    needWait: true
+  - image: jd/game.png
+    desc: 游戏
+    checkCar: false
+    needWait: false
+  - image: jd/vip.png
+    desc: vip
+    checkCar: false
+    needWait: false
+  - image: jd/grass.png
+    desc: 草
+    checkCar: false
+    needWait: false
+  - image: jd/pack.png
+    desc: 包包
+    checkCar: false
+    needWait: true
+  - image: jd/crown.png
+    desc: 皇冠
+    checkCar: false
+    needWait: false
+  - image: jd/go_complete.png
+    desc: 去完成
+    checkCar: false
+    needWait: true
