@@ -5,25 +5,21 @@ targets:
     needWait: true
   - image: jd/game.png
     desc: 游戏
-    checkCar: false
-    needWait: false
-  - image: jd/vip.png
-    desc: vip
-    checkCar: false
-    needWait: false
+    needWait: true
   - image: jd/grass.png
     desc: 草
-    checkCar: false
-    needWait: false
+    visit: true
+  - image: jd/tv.png
+    desc: 电视机
+  - image: jd/crown.png
+    desc: 皇冠(不想入会就移掉这个配置)
+    join: true
+  - image: jd/vip.png
+    desc: vip(不想入会就移掉这个配置)
+    join: true
   - image: jd/pack.png
     desc: 包包
-    checkCar: false
     needWait: true
-  - image: jd/crown.png
-    desc: 皇冠
-    checkCar: false
-    needWait: false
   - image: jd/go_complete.png
     desc: 去完成
-    checkCar: false
     needWait: true

@@ -67,12 +67,19 @@ def start_mission() -> bool:
     point = result[1]
     print("找到了 %s 对应的按钮" % target['desc'])
     go_y = point[1]
-    go_x = (screen_width - point[0]) - random.randint(10, 50)
+    if point[0] > screen_width / 2:
+        go_x = point[0]
+    else:
+        go_x = (screen_width - point[0]) - random.randint(10, 50)
     touch((go_x, go_y))
     time.sleep(3)
-    if target['checkCar']:
+    if target.get('checkCar'):
         check_car()
-    wait_and_back(target['needWait'])
+    if target.get('join'):
+        join()
+    if target.get('visit'):
+        visit()
+    wait_and_back(target.get('needWait'))
     return True
 
 
@@ -89,7 +96,6 @@ def wait_and_back(need_wait):
         for i in range(0, 10):
             print("\r等待浏览完成%s" % ("." * i), end="")
             time.sleep(1)
-    print()
     print("金币GET")
     print("返回上一个页面")
     keyevent("BACK")
@@ -143,6 +149,36 @@ def find_point(filename):
             if top_point is None or top_point[1] > point[1]:
                 top_point = point
         return top_point
+
+
+def join():
+    join_template = Template("jd/join.png")
+    if not exists(join_template):
+        return False
+    touch(join_template)
+    touch(Template("jd/accept.png"))
+    return True
+
+
+def visit():
+    print("准备逛该死的店铺")
+    visit_count = 0
+    while True:
+        point = find_point("jd/visit.png")
+        if point is not None:
+            visit_count += 1
+            print("%d个去逛逛" % visit_count)
+            touch(point)
+            time.sleep(3)
+            print("返回页面")
+            keyevent("BACK")
+            time.sleep(2)
+            if visit_count > 5:
+                print("逛完了，去死吧，东哥")
+                return True
+        else:
+            break
+    return False
 
 
 if __name__ == '__main__':
