@@ -24,7 +24,7 @@ class TaoBao:
         node = self.find_node(et)
         # 找不到满足条件的节点
         if node is None:
-            print("笑死，根本找不到可以点击的按钮，请确认是否符合自己的预期")
+            print("根本找不到可以点击的按钮，请确认是否符合自己的预期")
             return False
         # 页面跳转
         self.adb.click_node(node)
@@ -33,10 +33,10 @@ class TaoBao:
         if node.attrib["text"] == "去搜索":
             self.adb.swipe_node(et[0])
         # 二级页面逛店已经完成，不再进行确认了，节省一点时间
-        if not self.had_check_shop and node.attrib["text"] == "去浏览":
-            while self.check_shop():
-                self.had_check_shop = True
-                self.start_wait_for_gold()
+        # if not self.had_check_shop and node.attrib["text"] == "去浏览":
+        #     while self.check_shop():
+        #         self.had_check_shop = True
+        #         self.start_wait_for_gold()
         self.start_wait_for_gold()
         return True
 
@@ -48,7 +48,7 @@ class TaoBao:
         nodes = et.xpath(".//node[contains(@text,'逛')]/../..//node[@text='去完成']")
         if len(nodes) != 0:
             return nodes[0]
-        nodes = et.xpath(".//node[contains(@text,'浏览')]/../..//node[@text='去完成']")
+        nodes = et.xpath(".//node[contains(@text,'浏览15')]/../../..//node[@text='去完成']")
         if len(nodes) != 0:
             return nodes[0]
         return None
