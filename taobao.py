@@ -48,6 +48,9 @@ class TaoBao:
         nodes = et.xpath(".//node[contains(@text,'逛')]/../..//node[@text='去完成']")
         if len(nodes) != 0:
             return nodes[0]
+        nodes = et.xpath(".//node[contains(@text,'浏览')]/../..//node[@text='去完成']")
+        if len(nodes) != 0:
+            return nodes[0]
         return None
 
     def check_shop(self) -> bool:
