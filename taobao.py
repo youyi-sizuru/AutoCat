@@ -64,7 +64,7 @@ class TaoBao:
         return True
 
     def start_wait_for_gold(self):
-        for i in range(0, 16):
+        for i in range(0, 20):
             print("\r正在等待喵币%s" % ("." * i), end="")
             time.sleep(1)
         print()

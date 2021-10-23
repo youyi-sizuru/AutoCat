@@ -99,6 +99,7 @@ def wait_and_back(need_wait):
         for i in range(0, 10):
             print("\r等待浏览完成%s" % ("." * i), end="")
             time.sleep(1)
+    print()
     print("金币GET")
     print("返回上一个页面")
     keyevent("BACK")
