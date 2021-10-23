@@ -73,13 +73,16 @@ def start_mission() -> bool:
         go_x = (screen_width - point[0]) - random.randint(10, 50)
     touch((go_x, go_y))
     time.sleep(3)
+    need_wait = target.get('needWait')
     if target.get('checkCar'):
-        check_car()
+        if check_car():
+            need_wait = False
     if target.get('join'):
-        join()
+        if join():
+            need_wait = False
     if target.get('visit'):
         visit()
-    wait_and_back(target.get('needWait'))
+    wait_and_back(need_wait)
     return True
 
 
@@ -122,8 +125,9 @@ def check_car() -> bool:
                 touch(car["result"])
                 time.sleep(3)
                 print("返回页面")
-                keyevent("BACK")
-                time.sleep(2)
+                while not exists(Template("jd/shop.png", threshold=0.9)):
+                    keyevent("BACK")
+                    time.sleep(2)
                 if car_count > 5:
                     print("完成啦，结束后记得清空购物车，东哥不会心疼你的")
                     return True
@@ -152,7 +156,7 @@ def find_point(filename):
 
 
 def join():
-    join_template = Template("jd/join.png")
+    join_template = Template("jd/join.png", threshold=0.9)
     if not exists(join_template):
         return False
     touch(join_template)
