@@ -21,6 +21,15 @@ class TaoBao:
         et = self.adb.dump_and_parse()
         if et is None:
             return False
+        # 适配天天领现金
+        day_nodes = et.xpath(".//node[contains(@text,'浏览天天领')]/../..//node[@text='去完成']")
+        if len(day_nodes) != 0:
+            node = day_nodes[0]
+            self.adb.click_node(node)
+            print("点击天天赚钱")
+            self.adb.touch_image("taobao/money.png")
+            self.start_wait_for_gold()
+            return True
         node = self.find_node(et)
         # 找不到满足条件的节点
         if node is None:

@@ -5,7 +5,7 @@ import time
 from pathlib import Path
 
 import lxml.etree as ET
-from airtest.core.api import connect_device, auto_setup
+from airtest.core.api import connect_device, auto_setup, touch, Template
 from airtest.core.error import DeviceConnectionError, AdbError
 
 
@@ -96,3 +96,8 @@ class AdbShell:
         full_command = "-s %s %s" % (self.device_name, command)
         print("运行相关命令: %s" % full_command)
         return self.android.adb.cmd(full_command, device=False, timeout=20)
+
+    def touch_image(self, image_file):
+        touch(Template(image_file, threshold=0.8))
+        time.sleep(4)
+        print("完成点击")
