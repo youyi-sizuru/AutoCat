@@ -1,0 +1,4 @@
+lxml==4.6.1
+airtest==1.2.3
+PyYAML==5.4.1
+click==7.1.2

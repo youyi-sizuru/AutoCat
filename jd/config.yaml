@@ -17,9 +17,9 @@ targets:
   - image: jd/vip.png
     desc: vip(不想入会就移掉这个配置)
     join: true
-  - image: jd/pack.png
-    desc: 包包
-    needWait: true
+  # - image: jd/pack.png
+  #   desc: 包包
+  #   needWait: true
   - image: jd/go_complete.png
     desc: 去完成
     needWait: true
