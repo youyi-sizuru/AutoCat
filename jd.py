@@ -96,7 +96,7 @@ def find_target():
 
 def wait_and_back(need_wait):
     if need_wait:
-        for i in range(0, 10):
+        for i in range(0, 12):
             print("\r等待浏览完成%s" % ("." * i), end="")
             time.sleep(1)
     print()
