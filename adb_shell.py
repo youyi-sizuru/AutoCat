@@ -1,3 +1,4 @@
+import difflib
 import os
 import random
 import re
@@ -5,8 +6,9 @@ import time
 from pathlib import Path
 
 import lxml.etree as ET
-from airtest.core.api import connect_device, auto_setup, touch, Template
+from airtest.core.api import connect_device, auto_setup, touch, Template, snapshot
 from airtest.core.error import DeviceConnectionError, AdbError
+from paddleocr import PaddleOCR
 
 
 class AdbShell:
@@ -14,6 +16,7 @@ class AdbShell:
         auto_setup(__file__)
         self.device_name = device_name
         self.android = connect_device("android:///%s" % device_name)
+        self.ocr = PaddleOCR(use_angle_cls=False, lang="ch")
 
     def swipe_node(self, node):
         bounds = str(node.get("bounds"))
@@ -101,3 +104,67 @@ class AdbShell:
         touch(Template(image_file, threshold=0.8))
         time.sleep(4)
         print("完成点击")
+
+    def get_current_app_package_name(self) -> str:
+        stdout = self.run_adb_command("shell dumpsys window")
+        current_focus = next(line for line in stdout.split("\n") if "mCurrentFocus" in line)
+        try:
+            start = current_focus.index("{")
+            end = current_focus.index("}")
+            result = current_focus[start + 1:end]
+            splits = result.split(" ")
+            end_split = splits[len(splits) - 1]
+            center = end_split.index("/")
+            current_package_name = end_split[:center]
+            print("当前应用包名: %s" % current_package_name)
+            return current_package_name
+        except ValueError:
+            print("找不到当前包名")
+            return ""
+
+    def start_app(self, package_name: str) -> bool:
+        print("准备启动app, 包名: %s" % package_name)
+        self.run_adb_command("shell monkey -p %s 1" % package_name)
+        time.sleep(4)
+        return self.get_current_app_package_name() == package_name
+
+    def restart_app(self, package_name: str) -> bool:
+        print("准备关闭app, 包名: %s" % package_name)
+        self.run_adb_command("shell am force-stop %s" % package_name)
+        time.sleep(4)
+        return self.start_app(package_name)
+
+    def find_text(self, text: str):
+        """ 查找某个字符串中心点在屏幕的位置，如果存在多个，则返回相似度最高的
+        :param text: 要查找的字符串
+        :return: 该字符串中心在屏幕的点（x,y）, 找不到返回None
+        """
+        snapshot_dir = Path(__file__).parent.joinpath("temp")
+        if not os.path.exists(snapshot_dir):
+            os.makedirs(snapshot_dir)
+        snapshot_file = snapshot_dir.joinpath("snapshot.jpg")
+        snapshot(filename=snapshot_file, quality=30)
+        if not os.path.exists(snapshot_file):
+            return None
+        result = self.ocr.ocr(str(snapshot_file), cls=False)
+        if result is None or len(result) == 0:
+            return None
+        max_similar_point = 0.7
+        max_similar_line = None
+        for line in result:
+            if line[1][1] < 0.7:
+                continue
+            similar_point = difflib.SequenceMatcher(None, text, line[1][0]).ratio() * line[1][1]
+            if similar_point > max_similar_point:
+                max_similar_point = similar_point
+                max_similar_line = line
+        if max_similar_line is not None:
+            center_x = (max_similar_line[0][0][0] + max_similar_line[0][1][0]) / 2
+            center_y = (max_similar_line[0][0][1] + max_similar_line[0][3][1]) / 2
+            print("找到了一个相似的字符串: %s, 相似度为: %s, 中心点为: (%s, %s)" % (
+                str(max_similar_line[1][0]), str(max_similar_point), str(center_x), str(center_y)))
+            return center_x, center_y
+        return None
+
+    def touch_point(self, point: tuple):
+        touch(point)
