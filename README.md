@@ -8,7 +8,7 @@
 
 ## 环境
 
-python 3.3以上(最好是3.9以下), 64位
+python 3.3以上(最好是3.8), 64位
 
 依赖安装：pip install -r requirement.txt
 
